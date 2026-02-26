@@ -185,9 +185,10 @@ async function main() {
     console.log("✅ Repayment schedule: 12 monthly payments (principal + interest)\n");
 
     // Save deployment details
+    const networkInfo = await hre.ethers.provider.getNetwork();
     const deploymentData = {
       network: hre.network.name,
-      chainId: (await hre.ethers.provider.getNetwork()).chainId,
+      chainId: networkInfo.chainId.toString(),
       deployer: deployer.address,
       timestamp: new Date().toISOString(),
       maturityDate: new Date(maturityDate * 1000).toISOString(),

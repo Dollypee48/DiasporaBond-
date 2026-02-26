@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title ProjectRegistry
@@ -10,6 +10,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
  * Stores project metadata, milestones, and IPFS references
  */
 contract ProjectRegistry is Ownable, ReentrancyGuard {
+    constructor() Ownable(msg.sender) {}
     // Project status enum
     enum ProjectStatus {
         Pending,

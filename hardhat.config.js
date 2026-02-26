@@ -5,7 +5,7 @@ require("solidity-coverage");
 require("dotenv").config();
 
 const CREDITCOIN_RPC_URL = process.env.CREDITCOIN_RPC_URL || "https://rpc.cc3-testnet.creditcoin.network";
-const PRIVATE_KEY = process.env.PRIVATE_KEY || "0x0000000000000000000000000000000000000000000000000000000000000000";
+const PRIVATE_KEY = process.env.PRIVATE_KEY ;
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "";
 
 module.exports = {
@@ -16,25 +16,23 @@ module.exports = {
         enabled: true,
         runs: 200,
       },
+      viaIR: true,
     },
   },
   networks: {
     hardhat: {
       chainId: 1337,
-      forking: {
-        enabled: false,
-      },
     },
     local: {
       url: "http://127.0.0.1:8545",
-      chainId: 31337,
+      chainId: 1337,
     },
     creditcoin: {
       url: CREDITCOIN_RPC_URL,
-      accounts: PRIVATE_KEY !== "0x0000000000000000000000000000000000000000000000000000000000000000"
-        ? [PRIVATE_KEY]
+      accounts: PRIVATE_KEY && PRIVATE_KEY !== ""
+        ? [PRIVATE_KEY.startsWith("0x") ? PRIVATE_KEY : `0x${PRIVATE_KEY}`]
         : [],
-      chainId: 12391,
+      chainId: 102031,
       gasPrice: 1000000000, // 1 Gwei
     },
   },
