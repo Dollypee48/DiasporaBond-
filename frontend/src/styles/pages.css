@@ -1,0 +1,821 @@
+/* Pages Styles */
+
+/* Page Layout */
+.page {
+  width: 100%;
+}
+
+.page-header {
+  margin-bottom: 3rem;
+}
+
+.page-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: 0.5rem;
+}
+
+.page-header p {
+  font-size: 1.125rem;
+  color: var(--gray-600);
+}
+
+/* Home Page */
+.hero {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: white;
+  padding: 4rem 2rem;
+  border-radius: var(--border-radius);
+  margin-bottom: 3rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.hero-content h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.hero-content p {
+  font-size: 1.125rem;
+  margin-bottom: 2rem;
+  opacity: 0.95;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.hero-buttons .btn {
+  border: 2px solid white;
+  padding: 0.75rem 1.5rem;
+}
+
+.hero-buttons .btn-primary {
+  background-color: white;
+  color: var(--primary);
+  border-color: white;
+}
+
+.hero-buttons .btn-secondary {
+  background-color: transparent;
+  color: white;
+  border-color: white;
+}
+
+.hero-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.stat-card {
+  background-color: rgba(255, 255, 255, 0.15);
+  padding: 1.5rem;
+  border-radius: var(--border-radius);
+  backdrop-filter: blur(10px);
+}
+
+.stat-card h3 {
+  font-size: 1.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.stat-card p {
+  font-size: 0.875rem;
+  opacity: 0.85;
+}
+
+/* How It Works Section */
+.how-it-works {
+  margin-bottom: 4rem;
+}
+
+.how-it-works h2,
+.featured-projects h2,
+.features h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.step-card {
+  background-color: white;
+  padding: 2rem 1.5rem;
+  border-radius: var(--border-radius);
+  text-align: center;
+  box-shadow: var(--box-shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.step-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--box-shadow-lg);
+}
+
+.step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  background-color: var(--primary);
+  color: white;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin: 0 auto 1rem;
+}
+
+.step-card h3 {
+  margin-bottom: 0.5rem;
+}
+
+.step-card p {
+  color: var(--gray-600);
+  font-size: 0.875rem;
+}
+
+/* Projects Grid */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.project-card {
+  background-color: white;
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  box-shadow: var(--box-shadow);
+  transition: all 0.3s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--box-shadow-lg);
+}
+
+.project-header {
+  margin-bottom: 1rem;
+}
+
+.project-header h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.location {
+  color: var(--gray-600);
+  font-size: 0.875rem;
+}
+
+.description {
+  color: var(--gray-600);
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.project-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.project-stats .stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.project-stats .stat span {
+  font-size: 0.75rem;
+  color: var(--gray-500);
+  font-weight: 500;
+}
+
+.project-stats .stat strong {
+  font-size: 1.25rem;
+  color: var(--primary);
+}
+
+.progress-bar {
+  height: 8px;
+  background-color: var(--gray-200);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.progress {
+  height: 100%;
+  background-color: var(--primary);
+  transition: width 0.3s ease;
+}
+
+.project-amount {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  margin-bottom: 1rem;
+}
+
+/* Features Section */
+.features {
+  margin-bottom: 4rem;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.feature {
+  text-align: center;
+}
+
+.feature-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.feature h3 {
+  margin-bottom: 0.5rem;
+}
+
+.feature p {
+  color: var(--gray-600);
+  font-size: 0.875rem;
+}
+
+/* CTA Section */
+.cta {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: white;
+  padding: 3rem;
+  border-radius: var(--border-radius);
+  text-align: center;
+}
+
+.cta-content h2 {
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.cta-content p {
+  font-size: 1.125rem;
+  margin-bottom: 2rem;
+  opacity: 0.95;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--gray-600);
+}
+
+.empty-state p {
+  font-size: 1.125rem;
+  margin-bottom: 2rem;
+}
+
+/* Projects Page Controls */
+.projects-controls {
+  margin-bottom: 2rem;
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.search-box {
+  flex: 1;
+  min-width: 250px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.filter-btn {
+  padding: 0.5rem 1rem;
+  background-color: white;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.filter-btn.active {
+  background-color: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* Investor Dashboard */
+.portfolio-overview {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.overview-card {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+.overview-card h3 {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+}
+
+.overview-card .value {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.overview-card .detail {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+}
+
+/* Holdings Table */
+.holdings-section {
+  margin-bottom: 3rem;
+}
+
+.holdings-section h2 {
+  margin-bottom: 1.5rem;
+}
+
+.holdings-table {
+  background-color: white;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--box-shadow);
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 1rem;
+  background-color: var(--gray-50);
+  padding: 1rem;
+  font-weight: 600;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--gray-100);
+  align-items: center;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.project-cell h4 {
+  margin: 0;
+  color: var(--gray-900);
+}
+
+.yield-cell .yield-value {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.status-pill {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1000px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-pill.status-in {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.status-pill.status-completed {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+/* Yield Tracker */
+.yield-tracker {
+  margin-bottom: 3rem;
+}
+
+.projection-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.projection-card {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: var(--border-radius);
+  text-align: center;
+  box-shadow: var(--box-shadow);
+}
+
+.projection-card h4 {
+  margin-bottom: 1rem;
+  color: var(--gray-600);
+}
+
+.projection-card p {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* Municipality Form */
+.municipality-page .project-form {
+  background-color: white;
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--gray-700);
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.form-group small {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--gray-600);
+  font-size: 0.875rem;
+}
+
+.form-group.checkbox label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-group.checkbox input {
+  width: auto;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+/* Governance */
+.governance-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.governance-tabs .tab {
+  padding: 1rem 1.5rem;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--gray-600);
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.governance-tabs .tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.proposals-list {
+  display: grid;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.proposal-card {
+  background-color: white;
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+.proposal-card.passed,
+.proposal-card.failed {
+  opacity: 0.75;
+}
+
+.proposal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.proposal-header h3 {
+  margin: 0;
+  flex: 1;
+  margin-right: 1rem;
+}
+
+.voting-status {
+  white-space: nowrap;
+  color: var(--warning);
+  font-weight: 600;
+}
+
+.proposal-description {
+  color: var(--gray-600);
+  margin-bottom: 0.5rem;
+}
+
+.proposal-project {
+  color: var(--gray-600);
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+}
+
+.voting-section {
+  margin-bottom: 1.5rem;
+}
+
+.votes-display {
+  margin-bottom: 1rem;
+}
+
+.vote-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.vote-label {
+  min-width: 80px;
+  font-weight: 600;
+}
+
+.vote-bar {
+  flex: 1;
+  height: 24px;
+  background-color: var(--gray-200);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.vote-fill {
+  height: 100%;
+  background-color: var(--primary);
+}
+
+.vote-bar.for-votes .vote-fill {
+  background-color: var(--success);
+}
+
+.vote-bar.against-votes .vote-fill {
+  background-color: var(--danger);
+}
+
+.vote-count {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  min-width: 100px;
+  text-align: right;
+}
+
+.quorum-info {
+  background-color: var(--gray-50);
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  font-size: 0.875rem;
+}
+
+.voting-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.voting-actions .btn {
+  flex: 1;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1000px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-badge.passed {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.status-badge.failed {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.voting-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: var(--gray-50);
+  border-radius: var(--border-radius);
+}
+
+.vote-result {
+  font-weight: 600;
+  color: var(--gray-800);
+}
+
+.executed-badge {
+  background-color: var(--success);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1000px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.governance-info {
+  margin-bottom: 3rem;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.info-card {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+.info-card h4 {
+  margin-bottom: 0.5rem;
+  color: var(--primary);
+}
+
+.info-card p {
+  color: var(--gray-600);
+  font-size: 0.875rem;
+}
+
+.info-box {
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  margin-bottom: 2rem;
+}
+
+.loading {
+  background-color: #eff6ff;
+  color: #1e40af;
+}
+
+.error {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .hero-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .steps-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .portfolio-overview {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .holdings-table,
+  .table-header,
+  .table-row {
+    grid-template-columns: 1fr;
+  }
+
+  .projection-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .info-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .projects-controls {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "name": "diaspora-bond",
+  "version": "1.0.0",
+  "description": "Tokenized Municipal Bonds on Creditcoin Testnet - Enabling Infrastructure Financing in Emerging Markets",
+  "author": "DiasporaBond Team",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "compile": "hardhat compile",
+    "deploy": "hardhat run scripts/deploy.js --network creditcoin",
+    "test": "hardhat test",
+    "test:coverage": "hardhat coverage",
+    "dev": "cd frontend && npm run dev",
+    "build": "hardhat compile && cd frontend && npm run build",
+    "generate-abis": "node scripts/generateABIs.js",
+    "accounts": "hardhat accounts",
+    "clean": "hardhat clean && rm -rf artifacts/ cache/"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@nomicfoundation/hardhat-ethers": "^3.0.5",
+    "@openzeppelin/hardhat-upgrades": "^2.1.1",
+    "hardhat": "^2.19.5",
+    "hardhat-gas-reporter": "^1.0.9",
+    "solidity-coverage": "^0.8.5",
+    "dotenv": "^16.3.1",
+    "ethers": "^6.10.0"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.0",
+    "@openzeppelin/contracts-upgradeable": "^5.0.0"
+  }
+}
