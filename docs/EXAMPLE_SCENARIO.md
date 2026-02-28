@@ -1,403 +1,46 @@
-# DiasporaBond Example Scenario: Lagos Water Infrastructure Bond
+This example scenario describes how a single project—the Lagos Water Infrastructure Bond—would progress from registration to fundraising, milestone approvals, and repayments. It is simplified and intended to illustrate the platform flow.
 
-## Project Overview
+## Snapshot
 
-```
-Project Name:    Lagos Water Infrastructure Bond 2024
-Project ID:      0
-Municipality:    Lagos Metropolitan Authority
-Location:        Lagos, Nigeria
-Target Raise:    100 tokens ($100,000 USD equivalent)
-Annual Yield:    10% (1000 basis points)
-Duration:        12 months
-Maturity Date:   Day 365
-Insurance:       Required (1.5% premium)
-Bond Symbol:     LWB24
-```
+- Project: Lagos Water Infrastructure Bond 2024
+- ID: 0
+- Target: 100 tokens (~$100,000)
+- Yield: 10% annual
+- Duration: 12 months
+- Milestones: Design, Build Phase 1, Build Phase 2 & Launch, Year 1 Operations
 
-## Executive Summary
+## Key steps (high level)
 
-Lagos faces a critical water crisis: 40% of the population lacks access to clean water. This €95M infrastructure project will construct:
-- Water treatment facilities (expanded capacity)
-- 200km distribution network
-- Community water kiosks in underserved zones
-- Monitoring and maintenance systems
+1. Project registration: municipality submits documents and IPFS proof; admins or a governance process approves and creates the project on-chain.
+2. Milestones are added on-chain with expected deliverables and release amounts.
+3. Investors deposit funds (bond purchases) into the escrow; a small issuance fee is collected by the platform.
+4. When a milestone is reported complete, the DAO creates a proposal to release funds to the municipality.
+5. Voters (bondholders) cast votes proportional to holdings; if quorum and majority pass, escrow funds are released.
+6. Repayments are scheduled and distributed to bondholders according to token holdings.
 
-### Financial Snapshot
-| Metric | Value |
-|--------|-------|
-| Total Target | $100,000 |
-| Total Yield (10% annual) | $10,000 |
-| Investor Fees (2% issuance) | -$2,000 |
-| Platform Fees (1% servicing) | -$1,000 |
-| Insurance Premium (1.5%) | -$1,500 |
-| **Net Investor Return** | **$5,500 (5.5% net)** |
+## Fundraising example (condensed numbers)
 
----
+- Investor A: deposits 10 tokens → receives 9.8 after 2% issuance fee
+- Investor B: deposits 35 tokens → receives 34.3
+- Investor C: deposits 30.5 tokens → receives 29.89
+- Investor D: deposits 30 tokens → receives 29.4
 
-## Timeline: Day-by-Day Simulation
+Total raised ≈ 103.39 tokens (103.4% of target). Issuance fees ≈ 2.07 tokens to treasury.
 
-### PHASE 1: PROJECT SETUP (Days -30 to 0)
+## Milestone voting (example)
 
-#### Day -30: Municipality Applies
-```
-Lagos Metropolitan Authority submits:
-- Project documentation (infrastructure plans, budget breakdown)
-- Environmental impact assessment
-- City council approval letter
-- Proposed milestones and timeline
+- Milestone evidence uploaded to IPFS and stored on-chain.
+- DAO proposal created to release milestone funds (e.g., 25 tokens for Design).
+- Voting opens for a fixed period (e.g., 3 days). Voting power = token balance.
+- If the proposal passes, funds are released from MilestoneEscrow to the municipality.
 
-Status: Pending review by DiasporaBond team
-```
+## Outcome and repayments
 
-#### Day -15: Project Approved & Registered
-```
-DiasporaBond governance team approves project against criteria:
-- ✅ Legal compliance
-- ✅ Infrastructure viability
-- ✅ Financial feasibility
+- Construction proceeds after milestone releases.
+- Repayments (principal + interest) are scheduled; RepaymentManager distributes to token holders proportionally.
+- InsurancePool (if enabled) can be used to cover part of losses in the event of default.
 
-Transaction: projectRegistry.createProject(
-    "Lagos Water Infrastructure Bond",
-    "Expand urban water supply for 5M citizens...",
-    "Lagos, Nigeria",
-    100 tokens,  // $100k target
-    1000,        // 10% yield
-    365 * 24 * 60 * 60,  // 365-day duration
-    "QmXxLagosWaterProjectIPFSHashV1",  // IPFS hash
-    0x[BondTokenAddress],
-    true  // Insurance required
-);
-
-Result:
-- Project ID: 0
-- Status: "Pending" → becomes "Active"
-- IPFS Hash stored on-chain
-- Available for investment
-```
-
-#### Days -14 to -8: Add Project Milestones
-```
-DiasporaBond + Municipality jointly define:
-
-Milestone 1: Design & Feasibility Study
-├─ Due Date: Day 30 (from launch)
-├─ Fund Release: 25 tokens ($25k)
-├─ Deliverables:
-│  ├─ Final design documents (IPFS link)
-│  ├─ Permits from environmental body
-│  └─ Construction contractor bids
-└─ Transaction: projectRegistry.addMilestone(0, "Design...", details...)
-
-Milestone 2: Infrastructure Build Phase 1
-├─ Due Date: Day 120
-├─ Fund Release: 35 tokens ($35k) - 50% of total
-├─ Deliverables:
-│  ├─ Treatment plant 40% complete (photos)
-│  ├─ Pipe network 20% laid
-│  └─ Payment receipts from contractors
-└─ Transaction: projectRegistry.addMilestone(0, "Build...", details...)
-
-Milestone 3: Infrastructure Build Phase 2 & Launch
-├─ Due Date: Day 240
-├─ Fund Release: 25 tokens ($25k) - remaining
-├─ Deliverables:
-│  ├─ System 100% complete
-│  ├─ Water quality certifications
-│  ├─ Community kiosks operational (500 photos)
-│  └─ Launch ceremony attendance sheet
-└─ Transaction: projectRegistry.addMilestone(0, "Launch...", details...)
-
-Milestone 4: Year 1 Operations & Maintenance
-├─ Due Date: Day 365
-├─ Fund Release: 15 tokens ($15k) - for ongoing maintenance
-├─ Deliverables:
-│  ├─ Monthly operation reports
-│  ├─ Water quality test results
-│  └─ Community usage statistics
-└─ Transaction: projectRegistry.addMilestone(0, "Operations...", details...)
-
-After adding milestones:
-- Project still "Active"
-- Ready for investor deposits
-- Milestones locked (can't be changed)
-```
-
-### PHASE 2: FUNDRAISING (Days 1-30)
-
-#### Day 1: Investment Campaign Launches
-```
-DiasporaBond announces:
-├─ Social media (Twitter #DiasporaBond)
-├─ Email to diaspora network (100k+ subscribers)
-├─ Partnership with African diaspora organizations
-├─ Live webinar: "Invest in Lagos Water"
-
-Content includes:
-- 3-minute pitch video
-- Financial projections
-- Team bios
-- Risk/insurance details
-```
-
-#### Day 5: First Investor (Zainab from London)
-```
-User: Zainab Al-Rashid
-├─ Location: London, UK
-├─ Portfolio: 5 other bonds
-├─ Risk tolerance: Medium
-├─ Investment: 10 tokens ($10,000)
-
-Step 1: Connect Wallet
-┌─────────────────────────────────┐
-│ MetaMask                        │
-│ ✓ Creditcoin Network            │
-│ ✓ Balance: 12 CTC               │
-│ ✓ Account: 0x1234...abcd        │
-└─────────────────────────────────┘
-
-Step 2: Approve Bond Spending
-Transaction: bondToken.approve(milestoneEscrow, 10 tokens)
-  - Gas cost: ~120k gas = 0.12 CTC (~$0.10)
-  - Status: ✅ Approved
-
-Step 3: Deposit into Escrow
-Transaction: milestoneEscrow.depositFunds(projectId=0, amount=10);
-
-INTERNAL LOGIC:
-├─ Calculate fee: 10 * 2% = 0.2 tokens
-├─ Bond amount: 10 - 0.2 = 9.8 tokens
-├─ Call: revenueEngine.collectIssuanceFee(0, 0.2)
-│  └─ Treasury balance: +0.2 tokens
-├─ Store: escrowAccounts[hash(0, 0x1234...abcd, timestamp)]
-├─ Track: investorHoldings[0][0x1234...abcd] = 9.8
-├─ Update: projectEscrowBalance[0] = 9.8
-└─ Emit: FundsDeposited(escrowId, 0, 0x1234...abcd, 10, 9.8)
-
-Step 4: Receive Bonds
-├─ Zainab's wallet: +9.8 LWB24 tokens
-├─ IPFS Certificate: Updated with proof
-└─ Dashboard update: Portfolio shows 9.8 tokens
-
-Frontend UX:
-┌─────────────────────────────────┐
-│ INVESTMENT CONFIRMED ✓          │
-│                                 │
-│ Invested: 10 tokens             │
-│ Received: 9.8 LWB24            │
-│ Fee: 0.2 (2% platform fee)      │
-│                                 │
-│ Your Yield Tracker:             │
-│ ├─ Annual (10%): +0.98 tokens   │
-│ ├─ Daily: +0.0027 tokens        │
-│ └─ Earned today: +0.0027 tokens │
-│                                 │
-│ Share: [Share] [Certificate]    │
-└─────────────────────────────────┘
-```
-
-#### Day 10: Second Investor (Ahmed from Egypt)
-```
-User: Ahmed Hassan
-├─ Investment: 35 tokens ($35,000)
-├─ From: Cairo, Egypt
-├─ Reason: "Building Africa, one bond at a time"
-
-Process: Same as Zainab
-├─ Approve: 35 tokens
-├─ Deposit: milestoneEscrow.depositFunds(0, 35)
-├─ Receive: 35 - 0.7 = 34.3 LWB24 tokens
-├─ Fee: 0.7 tokens → Treasury
-├─ Escrow: projectEscrowBalance[0] = 9.8 + 34.3 = 44.1
-
-Total Investors: 2
-Total Raised: 44.1 tokens (44.1% of target)
-```
-
-#### Day 20: Third Investor (Ama from Ghana)
-```
-User: Ama Owusu
-├─ Investment: 30.5 tokens ($30,500)
-├─ From: Accra, Ghana
-├─ Using: Ledger hardware wallet (max security)
-
-Process:
-├─ Approve: 30.5 tokens
-├─ Deposit: milestoneEscrow.depositFunds(0, 30.5)
-├─ Receive: 30.5 - 0.61 = 29.89 LWB24 tokens
-├─ Fee: 0.61 tokens → Treasury
-├─ Escrow: projectEscrowBalance[0] = 44.1 + 29.89 = 73.99
-
-Total Investors: 3
-Total Raised: 73.99 tokens (74% of target)
-```
-
-#### Day 25: Target Reached!
-```
-User: Chidi from Nigeria
-├─ Investment: 30 tokens (completes target + buffer)
-├─ From: Lagos itself (local investment!)
-
-Process: Same
-├─ Receive: 30 - 0.6 = 29.4 tokens
-├─ Escrow: projectEscrowBalance[0] = 73.99 + 29.4 = 103.39
-
-TOTAL RAISED: 103.39 tokens (103.4% of $100k target)
-
-Status Change:
-├─ Was: "Active"
-└─ Now: "FundsRaised" (auto-triggered by contract)
-
-Frontend Notification:
-┌─────────────────────────────────┐
-│ TARGET REACHED! 🎉              │
-│                                 │
-│ Lagos Water Bond                │
-│ Raised: 103.39 / 100 tokens    │
-│ Status: FUNDED                  │
-│                                 │
-│ Investors: 4 (from 4 countries) │
-│ Avg. Yield: 10%                 │
-│                                 │
-│ Next: Milestone 1 completion    │
-│ in ~5 days...                   │
-└─────────────────────────────────┘
-
-Investor Portfolio Dashboard:
-┌──────────────────────────────────┐
-│ PORTFOLIO SUMMARY                │
-│                                  │
-│ Total Invested: 103.39 tokens    │
-│ Current Value: 103.39 tokens     │
-│ Est. Yield (1 yr): 10.34 tokens  │
-│ Net Return (after fees): ~5%     │
-│                                  │
-│ Holdings:                        │
-│ ├─ Zainab: 9.8 (9.5%)           │
-│ ├─ Ahmed: 34.3 (33.2%)          │
-│ ├─ Ama: 29.89 (28.9%)           │
-│ └─ Chidi: 29.4 (28.4%)          │
-│                                  │
-│ Timeline to Repayment:           │
-│ └─ Month 1-12 (monthly payback)  │
-└──────────────────────────────────┘
-```
-
-#### Fundraising Summary
-```
-Days 1-25: Fundraising Phase
-├─ Total Raised: 103.39 tokens ($103,390)
-├─ Target: 100 tokens ($100,000)
-├─ Issuance Fees Collected: 2.07 tokens → Treasury
-├─ Investor Tokens Minted: 103.39 LWB24
-├─ Active Investors: 4 (3 diaspora + 1 local)
-├─ Average Hold Time Expected: 12 months
-└─ Status: "FundsRaised" ✅
-```
-
----
-
-### PHASE 3: CONSTRUCTION & MILESTONES (Days 26-240)
-
-#### Day 30: Milestone 1 Completion (Design & Feasibility)
-```
-Lagos Metropolitan Authority submits proof:
-
-Transaction from Municipality Account:
-$ projectRegistry.completeMilestone(projectId=0, milestoneIndex=0);
-
-Proof Uploaded to IPFS:
-├─ Final design document (5MB PDF)
-│  ├─ Water system architecture
-│  ├─ 50-year maintenance plan
-│  └─ Signed by 3 engineers
-├─ Permits folder
-│  ├─ Environmental approval
-│  ├─ Water board endorsement
-│  ├─ Safety inspection pass
-│  └─ 6 PDFs
-├─ Contractor bids folder
-│  ├─ 5 bid proposals
-│  ├─ Selected: Lafarge Construction (lowest + best track record)
-│  └─ Signed contract
-├─ Photos
-│  ├─ Project site (5 angles)
-│  ├─ Design review meeting (15 photos)
-│  └─ IPFS hash: QmMilestone1ProofLagosWater2024
-└─ Metadata:
-   └─ Time: Day 30
-   └─ IPFS hash: 💾 stored on-chain
-
-Contract State Update:
-├─ projectMilestones[0][0].completed = true
-├─ projectMilestones[0][0].completionDate = Day 30
-└─ Status still "FundsRaised" (awaiting vote)
-
-Frontend Notification (to all investors):
-┌─────────────────────────────────┐
-│ MILESTONE COMPLETED! ✓          │
-│                                 │
-│ Milestone 1: Design Complete    │
-│ Due: Day 30                      │
-│ Status: ✅ ON TIME              │
-│                                 │
-│ Evidence (IPFS):                │
-│ ├─ Design docs (verified)       │
-│ ├─ Environmental permits (5)    │
-│ ├─ Contractor contract (signed) │
-│ └─ Site photos (20)             │
-│                                 │
-│ Next: DAO VOTE required        │
-│ to release $25,000             │
-│ Voting period: 3 days          │
-│                                 │
-│ [VIEW EVIDENCE] [VOTE NOW]      │
-└─────────────────────────────────┘
-```
-
-#### Day 31: DAO Vote Created
-```
-Trigger: Automatic 30-minute delay after milestone completion
-
-Transaction from GovernanceDAO:
-$ governanceDAO.createProposal(
-    projectId=0,
-    milestoneIndex=0,
-    title="Release Milestone 1 Funds: Design Phase Complete",
-    description="All deliverables met. Design review passed. Ready for construction. IPFS proof: QmMilestone1...",
-    releaseTarget=0x[LagosMetroAddress],
-    releaseAmount=25 tokens
-);
-
-Result:
-├─ ProposalId: 0
-├─ Status: "Active" (voting open for 3 days)
-├─ ForVotes: 0
-├─ AgainstVotes: 0
-├─ AbstainVotes: 0
-├─ EndTime: Day 34 (3 days later)
-└─ Emit: ProposalCreated(0, 0, 0, governanceAddress)
-
-Dashboard for Voters:
-┌──────────────────────────────────┐
-│ ACTIVE PROPOSAL                  │
-│                                  │
-│ Lagos Water - Milestone 1        │
-│ Fund Release: 25 tokens ($25k)  │
-│ Due: Day 30 ✓ On time           │
-│                                  │
-│ Status: Accept milestone proof   │
-│ and release $25k to Lagos Metro? │
-│                                  │
-│ Your voting power: 9.8 tokens   │
-│ (based on your LWB24 holdings)  │
-│                                  │
-│ ┌──────────────────────────────┐ │
-│ │ [FOR] [AGAINST] [ABSTAIN]    │ │
-│ └──────────────────────────────┘ │
-│                                  │
-│ Current tally:                   │
-│ For:     0 (0%)                  │
+This scenario is illustrative—adjust numbers, fees, and timing to fit real projects and local regulations.
 │ Against: 0 (0%)                  │
 │ Abstain: 0 (0%)                  │
 │ Total: 0 / 103.39 (0% quorum)   │

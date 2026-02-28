@@ -5,16 +5,59 @@ import '../styles/components.css';
 const WalletConnect: React.FC = () => {
   const { account, isConnected, isCorrectNetwork, balance, connect, disconnect, isLoading, error } = useWeb3();
   const [showMenu, setShowMenu] = useState(false);
+  const [availableInjected, setAvailableInjected] = useState<string[]>([]);
+
+  React.useEffect(() => {
+    // Detect available injected wallets in browser
+    const injected: string[] = [];
+    const eth = (window as any).ethereum;
+    if (!eth) {
+      setAvailableInjected([]);
+      return;
+    }
+
+    // Some wallets expose `providers` array (multiple injected wallets)
+    if (Array.isArray(eth.providers)) {
+      for (const p of eth.providers) {
+        if (p.isMetaMask) injected.push('MetaMask');
+        else if (p.isCoinbaseWallet) injected.push('Coinbase Wallet');
+        else if (p.isFrame) injected.push('Frame');
+        else injected.push('Injected Wallet');
+      }
+    } else {
+      // single injected provider
+      if (eth.isMetaMask) injected.push('MetaMask');
+      else if (eth.isCoinbaseWallet) injected.push('Coinbase Wallet');
+      else injected.push('Injected Wallet');
+    }
+
+    setAvailableInjected(Array.from(new Set(injected)));
+  }, []);
 
   if (!isConnected) {
     return (
-      <button
-        className="btn btn-primary"
-        onClick={connect}
-        disabled={isLoading}
-      >
-        {isLoading ? '🔄 Connecting...' : '🔗 Connect Wallet'}
-      </button>
+      <div className="wallet-connect-cta">
+        <div style={{ marginBottom: 8 }}>
+          <strong>Connect Wallet</strong>
+        </div>
+        {availableInjected.length > 0 && (
+          <div style={{ marginBottom: 8 }}>
+            <small>Detected wallets:</small>
+            <div>
+              {availableInjected.map((w) => (
+                <span key={w} className="wallet-badge">{w}</span>
+              ))}
+            </div>
+          </div>
+        )}
+        <button
+          className="btn btn-primary"
+          onClick={connect}
+          disabled={isLoading}
+        >
+          {isLoading ? '🔄 Connecting...' : '🔗 Connect Wallet'}
+        </button>
+      </div>
     );
   }
 

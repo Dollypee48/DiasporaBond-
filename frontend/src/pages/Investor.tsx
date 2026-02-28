@@ -1,55 +1,78 @@
 import React from 'react';
 import { useWeb3 } from '../hooks/useWeb3';
+import { useProjects } from '../hooks/useProjects';
+import { getContract } from '../utils/ethersHelper';
+import { CONTRACT_ABIS } from '../contracts/contractABIs';
+import { CONTRACT_ADDRESSES } from '../utils/constants';
 import { formatUSD, formatPercentage, formatDate } from '../utils/formatters';
 import '../styles/pages.css';
 
 const Investor: React.FC = () => {
-  const { isConnected, account } = useWeb3();
+  const { isConnected: web3Connected, account } = useWeb3();
+  const { projects, isLoading: projectsLoading } = useProjects();
 
-  // Mock data - will be replaced with real contract data
-  const mockPortfolio = {
-    totalInvested: 50000,
-    currentValue: 54000,
-    totalYield: 4000,
-    activeProjects: 3,
-    completedProjects: 1,
-    holdings: [
-      {
-        id: 0,
-        projectName: 'Lagos Water Infrastructure',
-        amount: 10000,
-        yieldEarned: 1000,
-        status: 'In Progress',
-        expectedReturn: 11000,
-      },
-      {
-        id: 1,
-        projectName: 'Accra Solar Power',
-        amount: 15000,
-        yieldEarned: 1200,
-        status: 'In Progress',
-        expectedReturn: 16200,
-      },
-      {
-        id: 2,
-        projectName: 'Cairo Sanitation System',
-        amount: 12000,
-        yieldEarned: 800,
-        status: 'Completed',
-        expectedReturn: 12800,
-      },
-      {
-        id: 3,
-        projectName: 'Kigali Transportation Network',
-        amount: 13000,
-        yieldEarned: 1000,
-        status: 'In Progress',
-        expectedReturn: 14000,
-      },
-    ],
-  };
+  const [portfolio, setPortfolio] = React.useState<any>({
+    totalInvested: 0,
+    currentValue: 0,
+    totalYield: 0,
+    activeProjects: 0,
+    completedProjects: 0,
+    holdings: [],
+  });
 
-  if (!isConnected) {
+  React.useEffect(() => {
+    async function buildPortfolio() {
+      if (!account || !projects) return;
+
+      let totalInvested = 0;
+      let currentValue = 0;
+      let totalYield = 0;
+      const holdings: any[] = [];
+
+      for (const p of projects) {
+        try {
+          // For each project try to read the bond token balance for the current account
+          const bondAddress = p.bondTokenAddress || p.bondToken;
+          if (!bondAddress) {
+            holdings.push({ id: p.id, projectName: p.name, amount: 0, yieldEarned: 0, status: 'N/A', expectedReturn: 0 });
+            continue;
+          }
+
+          const bondContract = await getContract(bondAddress, CONTRACT_ABIS.BondToken, true);
+          const balance = await bondContract.balanceOf(account);
+          const invested = Number(balance ?? 0);
+
+          // naive currentValue / yield estimates — replace with accurate calculations as needed
+          const expectedReturn = invested * (1 + (p.yieldPercentage || 0) / 100);
+          const yieldEarned = expectedReturn - invested;
+
+          totalInvested += invested;
+          currentValue += expectedReturn;
+          totalYield += yieldEarned;
+
+          holdings.push({
+            id: p.id,
+            projectName: p.name,
+            amount: invested,
+            yieldEarned,
+            status: p.status === 0 ? 'In Progress' : 'Completed',
+            expectedReturn,
+          });
+        } catch (err) {
+          holdings.push({ id: p.id, projectName: p.name, amount: 0, yieldEarned: 0, status: 'N/A', expectedReturn: 0 });
+        }
+      }
+
+      const activeProjects = holdings.filter((h) => h.status === 'In Progress').length;
+      const completedProjects = holdings.filter((h) => h.status === 'Completed').length;
+
+      setPortfolio({ totalInvested, currentValue, totalYield, activeProjects, completedProjects, holdings });
+    }
+
+    buildPortfolio();
+  }, [account, projects]);
+
+  if (!web3Connected) {
     return (
       <div className="page investor-page">
         <div className="empty-state">
@@ -71,23 +94,23 @@ const Investor: React.FC = () => {
       <div className="portfolio-overview">
         <div className="overview-card">
           <h3>Total Invested</h3>
-          <p className="value">{formatUSD(mockPortfolio.totalInvested)}</p>
-          <p className="detail">Across {mockPortfolio.activeProjects + mockPortfolio.completedProjects} projects</p>
+          <p className="value">{formatUSD(portfolio.totalInvested)}</p>
+          <p className="detail">Across {portfolio.activeProjects + portfolio.completedProjects} projects</p>
         </div>
         <div className="overview-card">
           <h3>Current Value</h3>
-          <p className="value">{formatUSD(mockPortfolio.currentValue)}</p>
-          <p className="detail">+{formatUSD(mockPortfolio.currentValue - mockPortfolio.totalInvested)}</p>
+          <p className="value">{formatUSD(portfolio.currentValue)}</p>
+          <p className="detail">+{formatUSD(portfolio.currentValue - portfolio.totalInvested)}</p>
         </div>
         <div className="overview-card">
           <h3>Total Yield Earned</h3>
-          <p className="value">{formatUSD(mockPortfolio.totalYield)}</p>
-          <p className="detail">{formatPercentage((mockPortfolio.totalYield / mockPortfolio.totalInvested) * 100)}</p>
+          <p className="value">{formatUSD(portfolio.totalYield)}</p>
+          <p className="detail">{portfolio.totalInvested ? formatPercentage((portfolio.totalYield / portfolio.totalInvested) * 100) : '—'}</p>
         </div>
         <div className="overview-card">
           <h3>Active Projects</h3>
-          <p className="value">{mockPortfolio.activeProjects}</p>
-          <p className="detail">{mockPortfolio.completedProjects} completed</p>
+          <p className="value">{portfolio.activeProjects}</p>
+          <p className="detail">{portfolio.completedProjects} completed</p>
         </div>
       </div>
 
@@ -101,7 +124,7 @@ const Investor: React.FC = () => {
             <div>Status</div>
             <div>Expected Return</div>
           </div>
-          {mockPortfolio.holdings.map((holding) => (
+          {portfolio.holdings.map((holding: any) => (
             <div key={holding.id} className="table-row">
               <div className="project-cell">
                 <h4>{holding.projectName}</h4>
@@ -111,7 +134,7 @@ const Investor: React.FC = () => {
                 <span className="yield-value">{formatUSD(holding.yieldEarned)}</span>
               </div>
               <div>
-                <span className={`status-pill status-${holding.status.toLowerCase()}`}>
+                <span className={`status-pill status-${String(holding.status).toLowerCase()}`}>
                   {holding.status}
                 </span>
               </div>
@@ -129,15 +152,15 @@ const Investor: React.FC = () => {
         <div className="projection-grid">
           <div className="projection-card">
             <h4>3 Months</h4>
-            <p>{formatUSD(mockPortfolio.totalInvested * 0.1 * 0.25)}</p>
+            <p>{formatUSD((portfolio.totalInvested || 0) * 0.1 * 0.25)}</p>
           </div>
           <div className="projection-card">
             <h4>6 Months</h4>
-            <p>{formatUSD(mockPortfolio.totalInvested * 0.1 * 0.5)}</p>
+            <p>{formatUSD((portfolio.totalInvested || 0) * 0.1 * 0.5)}</p>
           </div>
           <div className="projection-card">
             <h4>12 Months</h4>
-            <p>{formatUSD(mockPortfolio.totalInvested * 0.1)}</p>
+            <p>{formatUSD((portfolio.totalInvested || 0) * 0.1)}</p>
           </div>
         </div>
       </section>

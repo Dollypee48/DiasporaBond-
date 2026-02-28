@@ -105,84 +105,11 @@ async function main() {
 
     console.log("✅ All contracts initialized\n");
 
-    // 9. Create example project
-    console.log("📋 Creating Example Project: Lagos Water Infrastructure...");
-
-    const municipalityAddress = deployer.address; // Use deployer as municipality for demo
-
-    const projectTx = await projectRegistry.createProject(
-      "Lagos Water Infrastructure Bond",
-      "Tokenized municipal bond for urban water supply expansion and treatment infrastructure",
-      "Lagos, Nigeria",
-      hre.ethers.parseEther("100"), // 100 tokens = $100k USD equivalent
-      1000, // 10% annual yield
-      12 * 30 * 24 * 60 * 60, // 12 months duration
-      "QmExampleIPFSHashForLagosWaterProject2024", // IPFS hash
-      bondTokenAddress,
-      true // Insurance required
-    );
-
-    await projectTx.wait();
-    deployments.ExampleProjectId = 0;
-
-    console.log("✅ Example project created with ID: 0\n");
-
-    // 10. Add milestones to example project
-    console.log("🎯 Adding Milestones to Example Project...");
-
-    const now = Math.floor(Date.now() / 1000);
-
-    // Milestone 1: Design & Planning
-    let milestoneTx = await projectRegistry.addMilestone(
-      0,
-      "Design & Planning",
-      "Complete detailed project design, feasibility studies, and environmental assessments",
-      now + 120 * 24 * 60 * 60, // 120 days
-      hre.ethers.parseEther("25") // 25% of funds
-    );
-    await milestoneTx.wait();
-    console.log("   ✅ Milestone 1: Design & Planning (25%)");
-
-    // Milestone 2: Infrastructure Build
-    milestoneTx = await projectRegistry.addMilestone(
-      0,
-      "Infrastructure Build",
-      "Construct water treatment facilities, pipes, and distribution networks",
-      now + 240 * 24 * 60 * 60, // 240 days
-      hre.ethers.parseEther("50") // 50% of funds
-    );
-    await milestoneTx.wait();
-    console.log("   ✅ Milestone 2: Infrastructure Build (50%)");
-
-    // Milestone 3: Operations Launch
-    milestoneTx = await projectRegistry.addMilestone(
-      0,
-      "Operations Launch",
-      "Full system operational testing, certification, and public launch",
-      now + 360 * 24 * 60 * 60, // 360 days
-      hre.ethers.parseEther("25") // 25% of funds
-    );
-    await milestoneTx.wait();
-    console.log("   ✅ Milestone 3: Operations Launch (25%)\n");
-
-    // 11. Setup repayment schedule
-    console.log("💰 Setting Up Repayment Schedule...");
-
-    const investors = [municipalityAddress]; // Demo: single investor
-    const investorBonds = [hre.ethers.parseEther("100")];
-
-    const repayTx = await repaymentManager.createRepaymentSchedule(
-      0, // projectId
-      hre.ethers.parseEther("100"), // principal: full investment
-      hre.ethers.parseEther("10"), // interest: 10% annual
-      now, // start immediately
-      now + 365 * 24 * 60 * 60, // 1 year duration
-      12, // 12 monthly payments
-      investors,
-      investorBonds
-    );
-    await repayTx.wait();
-    console.log("✅ Repayment schedule: 12 monthly payments (principal + interest)\n");
+    // NOTE: Removed demo/example project creation and milestone setup.
+    // Projects, milestones and repayment schedules should be created via
+    // the application's administrative flows or external scripts that
+    // provide real project data. This deploy script now only deploys and
+    // initializes contracts.
 
     // Save deployment details
     const networkInfo = await hre.ethers.provider.getNetwork();
@@ -193,14 +120,7 @@ async function main() {
       timestamp: new Date().toISOString(),
       maturityDate: new Date(maturityDate * 1000).toISOString(),
       contracts: deployments,
-      exampleProject: {
-        id: 0,
-        name: "Lagos Water Infrastructure Bond",
-        targetAmount: "100 tokens",
-        annualYield: "10%",
-        duration: "12 months",
-        milestones: 3,
-      },
+      // Example project info removed to avoid shipping demo data
     };
 
     const deploymentPath = path.join(__dirname, "../deployments.json");

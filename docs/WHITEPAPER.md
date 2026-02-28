@@ -1,203 +1,66 @@
-# DiasporaBond: Technical Whitepaper
+# DiasporaBond: Technical Whitepaper (Summary)
 
-## 1. Executive Summary
+This short whitepaper explains the goals, core mechanics, and architecture of DiasporaBond in plain language. It is a practical summary for engineers, product owners, and early reviewers.
 
-DiasporaBond is a decentralized platform that tokenizes municipal infrastructure bonds on the Creditcoin blockchain. It enables diaspora communities and global investors to fund real-world infrastructure projects in emerging markets (particularly Africa) with transparent on-chain governance, milestone-based fund release, proportional yield distribution, and optional default insurance.
+## Vision
 
-**Key Innovation**: Bridges the gap between off-chain infrastructure projects and on-chain DeFi through a hybrid model combining:
-- Real World Asset (RWA) tokenization
-- DAO governance for fund release oversight
-- Milestone-based escrow for risk mitigation
-- Transparent payment and yield tracking
-- Sustainable revenue model for platform operations
+DiasporaBond makes it easy for diaspora and international investors to fund vetted municipal projects by tokenizing bond issuance, protecting funds with milestone escrow, and letting token holders vote on fund releases.
 
----
+## How it works (high level)
 
-## 2. Problem Statement
+1. Municipality registers a project and defines milestones with deliverables.
+2. Investors deposit funds to buy bond tokens; a small issuance fee is collected.
+3. Funds are held in a MilestoneEscrow contract until evidence for a milestone is uploaded to IPFS.
+4. A DAO proposal is created to release the milestone funds; token holders vote.
+5. If the proposal passes, escrow releases funds to the municipality; repayments and yield distribution are handled by RepaymentManager.
+6. Optional InsurancePool can cover part of losses if project defaults.
 
-### Infrastructure Funding Gap in Emerging Markets
+## Core components
 
-**Statistics:**
-- Africa needs **$170 billion annually** for infrastructure (AfDB estimate)
-- Current funding covers only **$60 billion (~35%)**
-- 600+ million without electricity; 400+ million without clean water
+- BondToken (ERC-20): represents investor ownership; tracks yield and maturity.
+- ProjectRegistry: stores project metadata and milestone definitions (with IPFS references).
+- MilestoneEscrow: holds investor funds and releases them on approved milestones.
+- GovernanceDAO: proposal/voting system; voting weight = token balance.
+- RepaymentManager: schedules and distributes repayments to token holders.
+- RevenueEngine: collects fees (issuance, servicing) and manages treasury.
+- InsurancePool (optional): premium collection and claim payouts.
 
-### Barriers to Investment
+## Economic assumptions & fees
 
-| Barrier | Impact |
-|---------|--------|
-| Limited institutional capacity | High default risk perception |
-| Opaque municipal finances | Difficulty assessing creditworthiness |
-| Geographic barriers | Diaspora investors excluded |
-| Lack of real-time trust verification | No transparency into fund usage |
-| High transaction costs | Small investors priced out |
-| Liquidity constraints | Capital locked until completion |
+- Issuance fee: 2% (collected on bond purchases)
+- Servicing fee: 1% (collected on repayments)
+- Insurance premium: 1.5% (if enabled)
 
-### Current Solutions & Gaps
+These fees fund platform operations and the treasury.
 
-**Traditional Bonds:**
-- ✅ Established, trusted
-- ❌ Inaccessible ($10k+ minimums)
-- ❌ Geographic restrictions (foreign investors)
-- ❌ Opaque fund tracking
+## Governance and safety
 
-**Crypto Lending (Current):**
-- ✅ Open, decentralized
-- ❌ Not tied to real-world assets
-- ❌ No milestone-based risk mitigation
-- ❌ Speculative, not productive
+- Voting: token-weighted voting for release of milestone funds.
+- Quorum and majority thresholds should be configured conservatively (e.g., 30–50% quorum).
+- Time-locks delay execution to allow community review.
+- All proofs (reports, photos) are stored on IPFS and referenced on-chain.
 
----
+## Risk considerations
 
-## 3. Solution: DiasporaBond Platform
+- Off-chain risk: project execution, fraud, regulatory issues — mitigated by rigorous off-chain due diligence and mandatory documentation.
+- Smart contract risk: reentrancy, access control, overflow — mitigated via OpenZeppelin patterns and testing. Recommend professional audit prior to mainnet.
+- Liquidity risk: tokens may be illiquid until secondary markets form — consider integrating DEX listings or buyback mechanisms.
 
-### Core Mechanism
+## Implementation notes
 
-```
-INVESTOR                    PLATFORM                        PROJECT
-┌──────────────┐           ┌──────────────┐               ┌──────────────┐
-│ Diaspora     │           │ Smart        │               │ Municipality │
-│ Community    │◄─────────►│ Contracts    │◄─────────────►│ Infrastructure
-│ $$ + Wallet  │           │ + DAO + IPFS │               │ $$ + Milestones
-└──────────────┘           └──────────────┘               └──────────────┘
-       │                           │                              │
-       │ 1. Deposit USD/Token      │                              │
-       │─────────────────────────►│                              │
-       │                           │ 2. Mint Bond Tokens         │
-       │                          │─────────────┐               │
-       │                          │  + 2% Fee   │               │
-       │                          │<────────────┘               │
-       │                           │                              │
-       │                           │ 3. Escrow Funds             │
-       │◄──────────────────────────│                              │
-       │ Bond Tokens (98 units)    │                              │
-       │                           │ 4. Create Project           │
-       │                           │  + Register Milestones      │
-       │                           │─────────────────────────────►
-       │                           │                              │
-       │                           │ 5. Milestone Complete       │
-       │                           │◄─────────────────────────────│
-       │                           │  (Municipality marks + IPFS) │
-       │                           │                              │
-       │ 6. Proposal: Release $$$  │  6. DAO Proposal            │
-       │◄──────────────────────────│                              │
-       │  Voting Period (3 days)   │                              │
-       │──────────────────────────►│                              │
-       │  VOTE (Yes/No/Abstain)    │                              │
-       │                           │ 7. Execute: Release Funds   │
-       │                           │─────────────────────────────►
-       │                           │  (1% Servicing Fee)         │
-       │                           │                              │
-       │                           │ 8. Request Repayment        │
-       │                           │◄─────────────────────────────│
-       │                           │  ($$ + Interest)            │
-       │                           │                              │
-       │ 9. Yield Distribution     │                              │
-       │◄──────────────────────────│                              │
-       │  (Proportional to holdings)│                              │
-       │                           │                              │
-```
+- Solidity 0.8.x with OpenZeppelin libraries used for safety.
+- Hardhat is used for compilation, testing, and deployment.
+- Frontend: React + Vite + Ethers.js (v6 patterns).
+- IPFS used for document storage; pinning service recommended (Pinata/Web3.Storage).
 
-### Three Pillars
+## Next steps (recommended)
 
-#### 1. **Tokenization**
-- Municipal bonds → ERC-20 tokens
-- Fractional ownership (no $10k minimums)
-- Global accessibility (Web3 wallet only)
-- Transparent pricing on-chain
+1. Formal security audit of all contracts.
+2. Add insurance underwriting rules and capital sufficiency checks.
+3. Integrate a faucet or testnet onboarding flow for users.
+4. Add off-chain oracles for verification where needed (optional).
 
-#### 2. **Governance**
-- DAO voting on fund release milestones
-- Quorum: 50% of tokens, majority required
-- Time-lock: 1-day delay before execution
-- Transparent voting history on-chain
-
-#### 3. **Escrow & Verification**
-- Milestone-based fund release (not lump sum)
-- IPFS proof of completion (photos, reports)
-- Municipal accountability
-- Insurance pool for defaults
-
----
-
-## 4. Technical Architecture
-
-### 4.1 Smart Contracts (7 Total)
-
-```solidity
-┌─────────────────────────────────────────────────────────────┐
-│ BondToken (ERC-20)                                          │
-│ ├─ Token supply management                                 │
-│ ├─ Yield percentage tracking                               │
-│ ├─ Maturity gating                                         │
-│ └─ calculateYield(principal, startTime, endTime)          │
-├─────────────────────────────────────────────────────────────┤
-│ ProjectRegistry                                             │
-│ ├─ Project metadata (name, location, yield, duration)     │
-│ ├─ Milestone definitions (title, target date, amount)     │
-│ ├─ IPFS hash storage (document references)                │
-│ └─ Access control (only municipalities can create)        │
-├─────────────────────────────────────────────────────────────┤
-│ MilestoneEscrow                                             │
-│ ├─ Investor fund deposits (deducts 2% fee → Treasury)    │
-│ ├─ Per-investor holding tracking                          │
-│ ├─ Milestone-based fund release                           │
-│ └─ Investor refunds (if project fails)                    │
-├─────────────────────────────────────────────────────────────┤
-│ GovernanceDAO                                               │
-│ ├─ Proposal creation for milestones                       │
-│ ├─ Voting mechanism (voting weight = bond balance)        │
-│ ├─ Quorum + majority checks                               │
-│ ├─ Time-lock execution (1 day delay)                      │
-│ └─ Transparent vote tracking                              │
-├─────────────────────────────────────────────────────────────┤
-│ RepaymentManager                                            │
-│ ├─ Monthly/yearly repayment schedules                     │
-│ ├─ Principal + interest calculations                      │
-│ ├─ Proportional distribution to investors                 │
-│ ├─ Overdue detection (≥30 days = default)                 │
-│ └─ Yield accrual tracking                                 │
-├─────────────────────────────────────────────────────────────┤
-│ RevenueEngine                                               │
-│ ├─ Issuance fee collection (2% on purchase)              │
-│ ├─ Servicing fee collection (1% on repayment)            │
-│ ├─ Treasury management                                    │
-│ └─ DAO reward distribution                                │
-├─────────────────────────────────────────────────────────────┤
-│ InsurancePool (Optional)                                    │
-│ ├─ Premium collection (1.5% of coverage)                  │
-│ ├─ Claim filing & approval                                │
-│ ├─ Payout up to 50% of bond value                         │
-│ └─ Solvency tracking                                      │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### 4.2 Data Flow
-
-```
-User Transaction → Frontend Validation → ethers.js
-                                            ↓
-                                    Gas Estimation
-                                            ↓
-                                    MetaMask Signing
-                                            ↓
-                                    Creditcoin RPC
-                                            ↓
-                                    Smart Contract Execution
-                                            ↓
-                                    State Update
-                                            ↓
-                                    Event Emitted
-                                            ↓
-                                    Frontend Listens
-                                            ↓
-                                    UI Updates (React)
-```
-
-### 4.3 Key Functions
-
-#### Investment Flow
-```solidity
+This summary is intended as a compact reference. For full technical details and API signatures, see the contract sources in `contracts/` and the longer docs in `docs/`.
 // Investor deposits 100 tokens for Lagos Water Bond (Project 0)
 bondToken.approve(milestoneEscrow, 100);
 milestoneEscrow.depositFunds(projectId=0, amount=100);
