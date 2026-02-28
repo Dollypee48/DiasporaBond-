@@ -3,11 +3,11 @@ import { useState, useEffect, useCallback } from "react";
 import { ethers } from "ethers";
 import {
   connectWallet,
-  getCurrentAccount,
   isConnectedToCorrectNetwork,
   switchNetwork,
   getBalance,
   formatEther,
+  getEthereumProvider,
 } from "../utils/ethersHelper";
 import { useRef } from "react";
 import { NETWORK_CONFIG } from "../utils/constants";
@@ -35,7 +35,7 @@ export function useWeb3() {
     manuallyDisconnected: false,
   });
 
-  const updateBalance = useCallback(async (account: string, provider: ethers.BrowserProvider) => {
+  const updateBalance = useCallback(async (account: string) => {
     try {
       const balance = await getBalance(account);
       setState((prev) => ({
@@ -57,11 +57,12 @@ export function useWeb3() {
       const provider = await connectWallet();
 
       if (!provider) {
-        throw new Error("Failed to connect wallet");
+        throw new Error("No Web3 wallet found. Install MetaMask or another Web3 wallet.");
       }
 
       providerRef.current = provider;
-      const account = await getCurrentAccount();
+      const signer = await provider.getSigner();
+      const account = await signer.getAddress();
 
       if (!account) {
         throw new Error("No account found");
@@ -76,7 +77,7 @@ export function useWeb3() {
         }
       }
 
-      await updateBalance(account, provider);
+      await updateBalance(account);
 
       setState((prev) => ({
         ...prev,
@@ -89,10 +90,9 @@ export function useWeb3() {
       }));
       manualDisconnectRef.current = false;
       
-      // attach wallet event listeners
-      if (typeof window !== "undefined" && (window as any).ethereum && (window as any).ethereum.on) {
-        const eth = (window as any).ethereum;
-
+      // attach wallet event listeners on the provider we connected with
+      const rawProvider = (provider as any)._rawProvider;
+      if (rawProvider && typeof rawProvider.on === "function") {
         const handleAccountsChanged = async (accounts: string[]) => {
           if (!accounts || accounts.length === 0) {
             // disconnected
@@ -102,7 +102,7 @@ export function useWeb3() {
           const newAccount = accounts[0];
           setState((prev) => ({ ...prev, account: newAccount, isConnected: true }));
           try {
-            await updateBalance(newAccount, providerRef.current as any);
+            await updateBalance(newAccount);
           } catch (e) {
             console.error(e);
           }
@@ -114,23 +114,32 @@ export function useWeb3() {
           setState((prev) => ({ ...prev, isCorrectNetwork: correct }));
           if (state.account) {
             try {
-              await updateBalance(state.account, providerRef.current as any);
+              await updateBalance(state.account);
             } catch (e) {
               console.error(e);
             }
           }
         };
 
-        eth.on("accountsChanged", handleAccountsChanged);
-        eth.on("chainChanged", handleChainChanged);
+        rawProvider.on("accountsChanged", handleAccountsChanged);
+        rawProvider.on("chainChanged", handleChainChanged);
 
         // keep a ref to cleanup listeners on disconnect/unmount
+        (providerRef as any)._rawProvider = rawProvider;
         (providerRef as any)._listeners = { handleAccountsChanged, handleChainChanged };
       }
     } catch (error: any) {
+      let message = "Failed to connect wallet";
+      if (error?.code === 4001) {
+        message = "Connection was rejected";
+      } else if (error?.message?.toLowerCase().includes("metamask") || error?.message?.toLowerCase().includes("wallet")) {
+        message = error.message;
+      } else if (error?.message) {
+        message = error.message;
+      }
       setState((prev) => ({
         ...prev,
-        error: error.message || "Failed to connect",
+        error: message,
         isLoading: false,
       }));
     }
@@ -139,11 +148,11 @@ export function useWeb3() {
   const disconnect = useCallback(() => {
     // remove event listeners if present
     try {
-      const eth = (window as any).ethereum;
+      const rawProvider = (providerRef as any)._rawProvider;
       const listeners = (providerRef as any)._listeners;
-      if (eth && listeners) {
-        if (listeners.handleAccountsChanged) eth.removeListener("accountsChanged", listeners.handleAccountsChanged);
-        if (listeners.handleChainChanged) eth.removeListener("chainChanged", listeners.handleChainChanged);
+      if (rawProvider && listeners && typeof rawProvider.removeListener === "function") {
+        if (listeners.handleAccountsChanged) rawProvider.removeListener("accountsChanged", listeners.handleAccountsChanged);
+        if (listeners.handleChainChanged) rawProvider.removeListener("chainChanged", listeners.handleChainChanged);
       }
     } catch (e) {
       // ignore
@@ -167,9 +176,10 @@ export function useWeb3() {
   useEffect(() => {
     // Check if already connected on mount
     const checkConnection = async () => {
-      if (typeof window !== "undefined" && window.ethereum) {
+      const eth = getEthereumProvider();
+      if (eth) {
         try {
-          const accounts = await window.ethereum.request({ method: "eth_accounts" });
+          const accounts = await (eth as any).request({ method: "eth_accounts" });
           if (accounts && accounts.length > 0) {
             if (manualDisconnectRef.current) return;
             // Do NOT auto-prompt the user. If accounts are already available
@@ -177,9 +187,9 @@ export function useWeb3() {
             const acct = accounts[0];
             setState((prev) => ({ ...prev, account: acct, isConnected: true }));
             try {
-              const provider = await connectWallet();
+              const provider = new ethers.BrowserProvider(eth as any);
               providerRef.current = provider;
-              await updateBalance(acct, provider);
+              await updateBalance(acct);
             } catch (e) {
               // ignore — we won't force prompts on mount
             }
@@ -195,11 +205,11 @@ export function useWeb3() {
     return () => {
       // cleanup listeners on unmount
       try {
-        const eth = (window as any).ethereum;
+        const rawProvider = (providerRef as any)._rawProvider;
         const listeners = (providerRef as any)._listeners;
-        if (eth && listeners) {
-          if (listeners.handleAccountsChanged) eth.removeListener("accountsChanged", listeners.handleAccountsChanged);
-          if (listeners.handleChainChanged) eth.removeListener("chainChanged", listeners.handleChainChanged);
+        if (rawProvider && listeners && typeof rawProvider.removeListener === "function") {
+          if (listeners.handleAccountsChanged) rawProvider.removeListener("accountsChanged", listeners.handleAccountsChanged);
+          if (listeners.handleChainChanged) rawProvider.removeListener("chainChanged", listeners.handleChainChanged);
         }
       } catch (e) {
         // ignore

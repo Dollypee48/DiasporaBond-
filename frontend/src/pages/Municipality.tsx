@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useWeb3 } from '../hooks/useWeb3';
+import { useWeb3Context } from '../context/Web3Context';
 import '../styles/pages.css';
 
 const Municipality: React.FC = () => {
-  const { isConnected, account } = useWeb3();
+  const { isConnected, connect } = useWeb3Context();
   const [formData, setFormData] = useState({
     projectName: '',
     description: '',
@@ -33,9 +33,11 @@ const Municipality: React.FC = () => {
     return (
       <div className="page municipality-page">
         <div className="empty-state">
-          <h2>🏛️ Municipality Dashboard</h2>
-          <p>Connect your wallet as a municipality to create and manage projects.</p>
-          <button className="btn btn-primary">Connect Wallet</button>
+          <h2>Municipality Dashboard</h2>
+          <p>Connect an authorized municipality wallet to create new infrastructure bond projects and manage milestones.</p>
+          <button className="btn btn-primary" onClick={connect}>
+            Connect Wallet
+          </button>
         </div>
       </div>
     );
@@ -59,7 +61,7 @@ const Municipality: React.FC = () => {
               name="projectName"
               value={formData.projectName}
               onChange={handleInputChange}
-              placeholder="e.g., Lagos Water Supply Expansion"
+              placeholder="e.g., Water Supply Expansion"
               required
             />
           </div>
@@ -86,7 +88,7 @@ const Municipality: React.FC = () => {
                 name="location"
                 value={formData.location}
                 onChange={handleInputChange}
-                placeholder="e.g., Lagos, Nigeria"
+                placeholder="e.g., City, Country"
                 required
               />
             </div>

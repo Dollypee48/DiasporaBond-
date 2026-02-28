@@ -11,37 +11,99 @@ export function getProvider(): ethers.JsonRpcProvider {
 }
 
 /**
- * Connect to wallet and return signer
+ * Get the EIP-1193 provider (handles multiple injected wallets)
+ * When multiple wallets are installed, window.ethereum is often an aggregator
+ * that delegates to the user's chosen wallet. Use it directly when it has request().
+ */
+export function getEthereumProvider(): unknown {
+  if (typeof window === "undefined") return null;
+  const w = window as any;
+  let eth = w.ethereum;
+  if (!eth) return null;
+  // When multiple wallets inject, eth.providers is an array. The parent (eth) is
+  // usually the aggregator with request() - prefer it. Only use a child provider
+  // if the parent lacks request (e.g. old injection pattern).
+  if (typeof (eth as any).request === "function") {
+    return eth;
+  }
+  if (Array.isArray(eth.providers) && eth.providers.length > 0) {
+    // Try each provider until one has request()
+    for (const p of eth.providers) {
+      if (p && typeof p.request === "function") return p;
+    }
+  }
+  return eth;
+}
+
+/**
+ * Try to connect using a specific provider. Returns { provider, rawProvider } on success.
+ */
+async function tryConnectWithProvider(eth: any): Promise<{ provider: ethers.BrowserProvider; rawProvider: any } | null> {
+  if (!eth || typeof eth.request !== "function") return null;
+  try {
+    await eth.request({ method: "eth_requestAccounts" });
+    return { provider: new ethers.BrowserProvider(eth), rawProvider: eth };
+  } catch (err: any) {
+    // User rejected - don't try other providers
+    if (err?.code === 4001) throw err;
+    return null;
+  }
+}
+
+/**
+ * Connect to wallet and return provider.
+ * Tries the main provider first, then each provider in the providers array
+ * when multiple wallets are installed.
  */
 export async function connectWallet(): Promise<ethers.BrowserProvider | null> {
-  if (typeof window === "undefined" || !window.ethereum) {
-    console.error("MetaMask not found");
+  const w = window as any;
+  const eth = w.ethereum;
+  if (!eth) {
+    console.error("No Web3 wallet found. Install MetaMask or another Web3 wallet.");
     return null;
   }
 
-  try {
-    // Request account access
-    await window.ethereum.request({ method: "eth_requestAccounts" });
-
-    // Get provider and signer
-    const provider = new ethers.BrowserProvider(window.ethereum);
-    return provider;
-  } catch (error) {
-    console.error("Failed to connect wallet:", error);
-    return null;
+  // Try main provider first (aggregator or single wallet)
+  let result = await tryConnectWithProvider(eth);
+  if (result) {
+    (result.provider as any)._rawProvider = result.rawProvider;
+    return result.provider;
   }
+
+  // Try each provider in the array when multiple wallets are installed
+  if (Array.isArray(eth.providers)) {
+    for (const p of eth.providers) {
+      result = await tryConnectWithProvider(p);
+      if (result) {
+        (result.provider as any)._rawProvider = result.rawProvider;
+        return result.provider;
+      }
+    }
+  }
+
+  // Last attempt with getEthereumProvider's selection
+  const fallback = getEthereumProvider();
+  result = await tryConnectWithProvider(fallback);
+  if (result) {
+    (result.provider as any)._rawProvider = result.rawProvider;
+    return result.provider;
+  }
+
+  throw new Error(
+    "Could not connect to any wallet. Try refreshing the page or ensuring your wallet extension is unlocked."
+  );
 }
 
 /**
  * Get current connected account address
  */
 export async function getCurrentAccount(): Promise<string | null> {
-  const provider = await connectWallet();
-  if (!provider) return null;
-
   try {
-    const signer = await provider.getSigner();
-    return signer.address;
+    const eth = getEthereumProvider();
+    if (!eth) return null;
+    const accounts: string[] = await (eth as any).request({ method: "eth_accounts" });
+    if (!accounts || accounts.length === 0) return null;
+    return accounts[0];
   } catch {
     return null;
   }
@@ -197,17 +259,19 @@ export async function getNetworkDetails(): Promise<ethers.Network | null> {
  */
 export async function isConnectedToCorrectNetwork(): Promise<boolean> {
   const network = await getNetworkDetails();
-  return network?.chainId === NETWORK_CONFIG.chainId;
+  if (!network) return false;
+  return network.chainId === BigInt(NETWORK_CONFIG.chainId);
 }
 
 /**
  * Switch network (MetaMask)
  */
 export async function switchNetwork(): Promise<boolean> {
-  if (!window.ethereum) return false;
+  const eth = getEthereumProvider();
+  if (!eth) return false;
 
   try {
-    await window.ethereum.request({
+    await (eth as any).request({
       method: "wallet_switchEthereumChain",
       params: [{ chainId: `0x${NETWORK_CONFIG.chainId.toString(16)}` }],
     });
@@ -222,10 +286,11 @@ export async function switchNetwork(): Promise<boolean> {
  * Add network to MetaMask
  */
 export async function addNetworkToWallet(): Promise<boolean> {
-  if (!window.ethereum) return false;
+  const eth = getEthereumProvider();
+  if (!eth) return false;
 
   try {
-    await window.ethereum.request({
+    await (eth as any).request({
       method: "wallet_addEthereumChain",
       params: [
         {

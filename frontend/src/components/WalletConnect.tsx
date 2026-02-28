@@ -1,62 +1,25 @@
 import React, { useState } from 'react';
-import { useWeb3 } from '../hooks/useWeb3';
+import { useWeb3Context } from '../context/Web3Context';
+import { switchNetwork } from '../utils/ethersHelper';
 import '../styles/components.css';
 
 const WalletConnect: React.FC = () => {
-  const { account, isConnected, isCorrectNetwork, balance, connect, disconnect, isLoading, error } = useWeb3();
+  const { account, isConnected, isCorrectNetwork, balance, connect, disconnect, isLoading, error } = useWeb3Context();
   const [showMenu, setShowMenu] = useState(false);
-  const [availableInjected, setAvailableInjected] = useState<string[]>([]);
-
-  React.useEffect(() => {
-    // Detect available injected wallets in browser
-    const injected: string[] = [];
-    const eth = (window as any).ethereum;
-    if (!eth) {
-      setAvailableInjected([]);
-      return;
-    }
-
-    // Some wallets expose `providers` array (multiple injected wallets)
-    if (Array.isArray(eth.providers)) {
-      for (const p of eth.providers) {
-        if (p.isMetaMask) injected.push('MetaMask');
-        else if (p.isCoinbaseWallet) injected.push('Coinbase Wallet');
-        else if (p.isFrame) injected.push('Frame');
-        else injected.push('Injected Wallet');
-      }
-    } else {
-      // single injected provider
-      if (eth.isMetaMask) injected.push('MetaMask');
-      else if (eth.isCoinbaseWallet) injected.push('Coinbase Wallet');
-      else injected.push('Injected Wallet');
-    }
-
-    setAvailableInjected(Array.from(new Set(injected)));
-  }, []);
 
   if (!isConnected) {
     return (
       <div className="wallet-connect-cta">
-        <div style={{ marginBottom: 8 }}>
-          <strong>Connect Wallet</strong>
-        </div>
-        {availableInjected.length > 0 && (
-          <div style={{ marginBottom: 8 }}>
-            <small>Detected wallets:</small>
-            <div>
-              {availableInjected.map((w) => (
-                <span key={w} className="wallet-badge">{w}</span>
-              ))}
-            </div>
-          </div>
-        )}
         <button
           className="btn btn-primary"
           onClick={connect}
           disabled={isLoading}
         >
-          {isLoading ? '🔄 Connecting...' : '🔗 Connect Wallet'}
+          {isLoading ? 'Connecting...' : 'Connect Wallet'}
         </button>
+        {error && (
+          <p className="wallet-connect-error">{error}</p>
+        )}
       </div>
     );
   }
@@ -65,7 +28,16 @@ const WalletConnect: React.FC = () => {
     return (
       <div className="network-warning">
         <p>⚠️ Wrong Network</p>
-        <button className="btn btn-secondary btn-sm">
+        <button
+          className="btn btn-secondary btn-sm"
+          onClick={async () => {
+            try {
+              await switchNetwork();
+            } catch {
+              // swallow, error will be reflected via hook if needed
+            }
+          }}
+        >
           Switch to Creditcoin
         </button>
       </div>

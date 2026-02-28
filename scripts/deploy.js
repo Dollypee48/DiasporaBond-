@@ -19,9 +19,9 @@ async function main() {
 
     const BondToken = await hre.ethers.getContractFactory("BondToken");
     const bondToken = await BondToken.deploy(
-      "Lagos Water Infrastructure Bond 2024",
-      "LWB24",
-      "Municipal water supply and treatment infrastructure expansion project in Lagos",
+      "Diaspora Bond Token",
+      "DBT",
+      "Tokenized municipal infrastructure bond",
       1000, // 10% annual yield
       maturityDate
     );

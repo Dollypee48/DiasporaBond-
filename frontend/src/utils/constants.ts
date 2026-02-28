@@ -11,8 +11,8 @@ export const CONTRACT_ADDRESSES = {
 };
 
 export const NETWORK_CONFIG = {
-  chainId: parseInt(import.meta.env.VITE_CHAIN_ID || "12391"),
-  rpcUrl: import.meta.env.VITE_CREDITCOIN_RPC || "https://testnet-rpc.creditcoin.network/rpc",
+  chainId: parseInt(import.meta.env.VITE_CHAIN_ID || "102031"),
+  rpcUrl: import.meta.env.VITE_CREDITCOIN_RPC || "https://rpc.cc3-testnet.creditcoin.network",
   networkName: import.meta.env.VITE_NETWORK_NAME || "Creditcoin Testnet",
 };
 

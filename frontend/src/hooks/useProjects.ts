@@ -1,6 +1,5 @@
 // useProjects Hook - Fetch and manage projects
 import { useState, useEffect, useCallback } from "react";
-import { ethers } from "ethers";
 import { CONTRACT_ADDRESSES } from "../utils/constants";
 import { CONTRACT_ABIS } from "../contracts/contractABIs";
 import { getContract } from "../utils/ethersHelper";
@@ -86,10 +85,15 @@ export function useProjects() {
         });
       }
 
+      // Filter out example/demo projects (e.g. Lagos Water)
+      const filtered = projectList.filter(
+        (p) => !p.name.toLowerCase().includes("lagos water")
+      );
+
       setState((prev) => ({
         ...prev,
-        projects: projectList,
-        totalProjects: count,
+        projects: filtered,
+        totalProjects: filtered.length,
         isLoading: false,
       }));
     } catch (error: any) {

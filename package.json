@@ -12,7 +12,7 @@
     "test:coverage": "hardhat coverage",
     "dev": "cd frontend && npm run dev",
     "build": "hardhat compile && cd frontend && npm run build",
-    "generate-abis": "node scripts/generateABIs.js",
+    "generate-abis": "node scripts/copy_abis.js",
     "accounts": "hardhat accounts",
     "clean": "hardhat clean && rm -rf artifacts/ cache/"
   },

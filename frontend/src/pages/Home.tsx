@@ -13,15 +13,6 @@ const Home: React.FC = () => {
     return sum + raised;
   }, 0);
 
-  const totalTarget = projects.reduce((sum, p) => {
-    const target = typeof p.targetAmount === 'string'
-      ? parseFloat(p.targetAmount)
-      : Number(p.targetAmount);
-    return sum + target;
-  }, 0);
-
-  const raiseProgress = totalTarget > 0 ? (totalRaised / totalTarget) * 100 : 0;
-
   return (
     <div className="page home-page">
       {/* Hero Section */}
@@ -89,53 +80,22 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Featured Projects */}
+      {/* Featured Projects CTA */}
       <section className="featured-projects">
-        <h2>Featured Projects</h2>
+        <h2>Live Infrastructure Opportunities</h2>
         {projects.length === 0 ? (
           <div className="empty-state">
-            <p>No projects available yet. Deploy contracts and create a project to get started!</p>
+            <p>Projects will appear here once municipalities launch bond offerings on-chain.</p>
+            <a href="/projects" className="btn btn-primary btn-lg">
+              View Projects
+            </a>
           </div>
         ) : (
-          <div className="projects-grid">
-            {projects.slice(0, 3).map((project) => {
-              const raised = typeof project.raisedAmount === 'string'
-                ? parseFloat(project.raisedAmount)
-                : Number(project.raisedAmount);
-              const target = typeof project.targetAmount === 'string'
-                ? parseFloat(project.targetAmount)
-                : Number(project.targetAmount);
-              const progress = (raised / target) * 100;
-
-              return (
-                <div key={project.id} className="project-card">
-                  <div className="project-header">
-                    <h3>{project.name}</h3>
-                    <span className="location">📍 {project.location}</span>
-                  </div>
-                  <p className="description">{project.description.substring(0, 100)}...</p>
-                  <div className="project-stats">
-                    <div className="stat">
-                      <span>Yield</span>
-                      <strong>{(project.yieldPercentage / 100).toFixed(1)}%</strong>
-                    </div>
-                    <div className="stat">
-                      <span>Raised</span>
-                      <strong>{Math.round(progress)}%</strong>
-                    </div>
-                  </div>
-                  <div className="progress-bar">
-                    <div className="progress" style={{ width: `${Math.min(progress, 100)}%` }}></div>
-                  </div>
-                  <div className="project-amount">
-                    {formatUSD(raised)} / {formatUSD(target)}
-                  </div>
-                  <a href={`/projects`} className="btn btn-primary btn-block">
-                    View Details
-                  </a>
-                </div>
-              );
-            })}
+          <div className="empty-state">
+            <p>Browse all active bond offerings and deep-dive into project details.</p>
+            <a href="/projects" className="btn btn-primary btn-lg">
+              View Projects
+            </a>
           </div>
         )}
       </section>

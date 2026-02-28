@@ -1,15 +1,14 @@
 import React from 'react';
-import { useWeb3 } from '../hooks/useWeb3';
+import { useWeb3Context } from '../context/Web3Context';
 import { useProjects } from '../hooks/useProjects';
 import { getContract } from '../utils/ethersHelper';
 import { CONTRACT_ABIS } from '../contracts/contractABIs';
-import { CONTRACT_ADDRESSES } from '../utils/constants';
-import { formatUSD, formatPercentage, formatDate } from '../utils/formatters';
+import { formatUSD, formatPercentage } from '../utils/formatters';
 import '../styles/pages.css';
 
 const Investor: React.FC = () => {
-  const { isConnected: web3Connected, account } = useWeb3();
-  const { projects, isLoading: projectsLoading } = useProjects();
+  const { isConnected: web3Connected, account, connect } = useWeb3Context();
+  const { projects } = useProjects();
 
   const [portfolio, setPortfolio] = React.useState<any>({
     totalInvested: 0,
@@ -32,7 +31,7 @@ const Investor: React.FC = () => {
       for (const p of projects) {
         try {
           // For each project try to read the bond token balance for the current account
-          const bondAddress = p.bondTokenAddress || p.bondToken;
+          const bondAddress = p.bondTokenAddress;
           if (!bondAddress) {
             holdings.push({ id: p.id, projectName: p.name, amount: 0, yieldEarned: 0, status: 'N/A', expectedReturn: 0 });
             continue;
@@ -76,9 +75,11 @@ const Investor: React.FC = () => {
     return (
       <div className="page investor-page">
         <div className="empty-state">
-          <h2>💼 Investor Dashboard</h2>
-          <p>Connect your wallet to view your portfolio and investments.</p>
-          <button className="btn btn-primary">Connect Wallet</button>
+          <h2>Investor Dashboard</h2>
+          <p>Connect your wallet to view your on-chain bond holdings, yield, and total portfolio value.</p>
+          <button className="btn btn-primary" onClick={connect}>
+            Connect Wallet
+          </button>
         </div>
       </div>
     );
@@ -165,12 +166,12 @@ const Investor: React.FC = () => {
         </div>
       </section>
 
-      <cta className="investor-cta">
+      <section className="investor-cta">
         <h3>Ready to Invest More?</h3>
         <a href="/projects" className="btn btn-primary">
           🔍 Browse More Projects
         </a>
-      </cta>
+      </section>
     </div>
   );
 };
